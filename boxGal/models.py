@@ -51,7 +51,7 @@ class Usuario(AbstractUser):
     def __str__(self):
         return self.username
 
-
+# Necesitamos ter o combate debaixo, xa que precisamos do modelo Usuario creado
 class Combate(models.Model):
     id_combate = models.BigAutoField(auto_created=True, primary_key=True)
     boxeador_azul = models.ForeignKey(Competidor, related_name='combates_azul', on_delete=models.CASCADE)

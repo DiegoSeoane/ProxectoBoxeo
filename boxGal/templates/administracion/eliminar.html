@@ -1,0 +1,58 @@
+{% extends 'header.html' %}
+{% block title %}
+  Administración
+{% endblock %}
+{% block corpo %}
+  <div class="container text-center">
+    <h1 class="my-5">Que queres facer?</h1>
+    <a href="{% url 'engadir' %}" class="btn p-3 px-5 mx-3 btn-success rounded-pill">Engadir</a>
+    <a href="{% url 'modificar' %}" class="btn p-3 px-5 mx-3 btn-primary rounded-pill">Modificar</a>
+    <a href="{% url 'eliminar' %}" class="btn p-3 px-5 mx-3 btn-danger rounded-pill">Eliminar</a>
+  </div>
+
+  <div class="container mt-5 text-center">
+    <a href="?lista=competidores" class="btn rounded-pill btn-warning">Competidores</a>
+    <a href="?lista=combates" class="btn rounded-pill btn-warning">Combates</a>
+    <a href="?lista=eventos" class="btn rounded-pill btn-warning">Eventos</a>
+  </div>
+
+  <div class="container">
+    {% if tipo == 'competidores' %}
+      <h2>Competidores:</h2>
+      <ul>
+        {% for competidor in lista.0 %}
+          <li>
+            {{ competidor }} <form action="{% url 'eliminarCompetidor' competidor.id_competidor %}" method="POST">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger">Eliminar</button>
+            </form>
+          </li>
+        {% endfor %}
+      </ul>
+    {% elif tipo == 'combates' %}
+      <h2>Combates:</h2>
+      <ul>
+        {% for combate in lista.0 %}
+          <li>
+            {{ combate }} - {{ combate.evento_combate }} - {{ combate.data_combate }}<form action="{% url 'eliminarCombate' combate.id_combate %}" method="POST">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger">Eliminar</button>
+            </form>
+          </li>
+        {% endfor %}
+      </ul>
+    {% elif tipo == 'eventos' %}
+      <h2>Combates:</h2>
+      <ul>
+        {% for evento in lista.0 %}
+          <li>
+            {{ evento }} {{ evento.data_evento }}<form action="{% url 'eliminarEvento' evento.id_evento %}" method="POST">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger">Eliminar</button>
+            </form>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </div>
+{% endblock %}
