@@ -1,0 +1,44 @@
+{% extends 'header.html' %}
+{% block title %}Competidores{% endblock %}
+{% block corpo %}
+<div class="container mt-5">
+    <form class="d-flex">
+        <input class="form-control me-2" id="buscadorInput" type="search" placeholder="Buscar por nome"
+            aria-label="Search">
+        <button class="btn btn-outline-success" type="submit">Buscar</button>
+    </form>
+</div>
+<hr>
+<div class="container">
+    <ul class="list-group" id="listaCompetidores">
+
+        {% for competidor in listaCompetidores %}
+        <li class="list-group-item list-group-item-action"><a
+                href="{% url 'competidoresPage' %}{{ competidor.id_competidor }}" class="nav-link text-dark"><img
+                    src="{{ competidor.foto_competidor.url }}"
+                    alt="{{ competidor.nome_competidor }} {{ competidor.apelidos_competidor}}" style="height: 50px;"
+                    class="mx-2">
+                {{ competidor.nome_competidor }} {{ competidor.apelidos_competidor }}
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+</html>
+<script defer>
+    let buscador = document.getElementById('buscadorInput');
+    buscador.addEventListener('input', (ev) => {
+        let listaC = document.getElementById('listaCompetidores');
+        valorBuscador = buscador.value.toUpperCase();
+        for (const elementoli of listaC.children) {
+            if (elementoli.innerText.toUpperCase().includes(valorBuscador)) {
+                elementoli.style.display = "";
+            } else {
+                elementoli.style.display = "none";
+            }
+        }
+    })
+
+</script>
+{% endblock %}
