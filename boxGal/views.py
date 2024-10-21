@@ -2,9 +2,13 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from .models import Competidor,Combate,Evento,Usuario
-from django.db.models import Q
-from .forms import CompetidorForm, CombateForm, EventoForm
+from django.db.models import Q, Count
+from .forms import CompetidorForm, CombateForm, EventoForm, RexistroUsuarioForm
 from django.urls import reverse
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+
 
 def inicioHTML(request):
   template = loader.get_template('index.html')
@@ -45,6 +49,16 @@ def perfilCompetidorHTML(request, id):
   template = loader.get_template('perfilCompetidor.html')
   return HttpResponse(template.render(contido, request))
 
+def combateHTML(request, id):
+  combateEspecifico = Combate.objects.get(id_combate = id)
+  likes = Combate.objects.filter(id_combate = id).values('likes').annotate(count = Count('likes'))
+  contido = {
+    'combate': combateEspecifico,
+    'likes':likes
+  }
+  template = loader.get_template('combate.html')
+  return HttpResponse(template.render(contido, request))
+  
 # Administracion
 
 def administracion(request):  
@@ -53,8 +67,6 @@ def administracion(request):
     
   }
   return HttpResponse(template.render(contido, request))
-
-
 
 # Engadir 
 def engadir(request):
@@ -228,3 +240,17 @@ def eliminarEvento(request, evento_id):
         return redirect('administracion')
 
     return HttpResponseRedirect(reverse('competidoresPage'))
+
+# Apartado usuarios
+
+def rexistro_usuario(request):
+    if request.method == 'POST':
+        form = RexistroUsuarioForm(request.POST)
+        if form.is_valid():
+            usuario = form.save(commit=False)
+            # Non ten likes nin seguimentos por defecto
+            usuario.save()
+            return redirect('indexPage')
+    else:
+        form = RexistroUsuarioForm()
+    return render(request, 'rexistro.html', {'form': form})

@@ -6,9 +6,11 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('', views.inicioHTML, name='indexPage'),
+    path('rexistro/', views.rexistro_usuario, name='rexistroUsuario'),
     path('eventos/', views.eventosHTML, name='eventosPage'),
     path('competidores/', views.competidoresHTML, name='competidoresPage'),
     path('competidores/<int:id>/', views.perfilCompetidorHTML),
+    path('combate/<int:id>/', views.combateHTML, name='combateEspecifico'),
     path('administracion/', views.administracion, name='administracion'),
     path('administracion/engadir', views.engadir, name='engadir'),
     path('administracion/modificar', views.modificar, name='modificar'),
