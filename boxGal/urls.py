@@ -8,7 +8,7 @@ from django.contrib.auth import views as auth_views
 urlpatterns = [
     path('', views.inicioHTML, name='indexPage'),
     path('login/', views.inicio_sesion, name='login'),
-    path('logout/', views.custom_logout, name='logout'),
+    path('logout/', views.logoutPersonalizado, name='logout'),
     path('rexistro/', views.rexistro_usuario, name='rexistroUsuario'),
     path('eventos/', views.eventosHTML, name='eventosPage'),
     path('competidores/', views.competidoresHTML, name='competidoresPage'),
@@ -27,4 +27,4 @@ urlpatterns = [
     path('engadir/competidor/', views.engadir_competidor, name='engadirCompetidor'),
     path('engadir/combate/', views.engadir_combate, name='engadirCombate'),
     path('engadir/evento/', views.engadir_evento, name='engadirEvento'),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) # Esta ultima linea é necesaria para o uso de media en local

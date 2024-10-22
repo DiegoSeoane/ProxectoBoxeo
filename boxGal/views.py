@@ -69,7 +69,7 @@ def administracion(request):
   }
   return HttpResponse(template.render(contido, request))
 
-# Engadir 
+# Engadir información (CRUD)
 def engadir(request):
   template = loader.get_template('administracion/engadir.html')
   lista = request.GET.get('lista','competidores')
@@ -142,7 +142,7 @@ def modificar(request):
   
   return HttpResponse(template.render(contido, request))
 
-# Modificar
+# Modificar información (CRUD)
 
 def modificar(request):
   template = loader.get_template('administracion/modificar.html')
@@ -196,7 +196,7 @@ def modificar_evento(request,evento_id):
     form = EventoForm(instance=evento)
   return render(request, 'administracion/modificarEvento.html', {'form':form})
 
-# Eliminar
+# Eliminar información (CRUD)
 def eliminar(request):
   template = loader.get_template('administracion/eliminar.html')
   lista = request.GET.get('lista','competidores')
@@ -264,18 +264,20 @@ def inicio_sesion(request):
         username = request.POST['username']
         password = request.POST['password']
         
-        # Autenticamos al usuario con el username
+        # Autenticamos o usuario
         user = authenticate(request, username=username, password=password)
         
         if user is not None:
             login(request, user)
-            return redirect('indexPage')  # Redirige a la página principal
+            return redirect('indexPage')  # Redirixe á páxina principal
         else:
             messages.error(request, 'Credenciales inválidas')
             return render(request, 'login.html', {'error': 'Credenciales inválidas'})
     
     return render(request, 'login.html')
+
+def logoutPersonalizado(request):
   
-def custom_logout(request):
     logout(request)
-    return redirect('indexPage')
+  
+    return redirect('indexPage') # Redirixe á páxina principal

@@ -16,9 +16,7 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-LOGOUT_REDIRECT_URL = 'indexPage'
-
-AUTH_USER_MODEL = 'boxGal.Usuario'
+AUTH_USER_MODEL = 'boxGal.Usuario' # Necesario para logear cos usuarios personalizados
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
@@ -123,7 +121,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = 'static/' # Necesario co proxecto en local para ver as imaxes
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
