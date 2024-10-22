@@ -1,0 +1,20 @@
+{% extends 'header.html' %}
+{% block title %}
+  Iniciar Sesion
+{% endblock %}
+{% block corpo %}
+  <form method="POST" action="{% url 'login' %}">
+    {% csrf_token %}
+    <input type="text" name="username" placeholder="Nombre de usuario" required />
+    <input type="password" name="password" placeholder="Contraseña" required />
+    <button type="submit">Iniciar Sesión</button>
+  </form>
+  <a href="{% url 'rexistroUsuario' %}" class="btn btn-danger">Rexistrarse</a>
+  {% if messages %}
+    <div class="alert alert-danger">
+      {% for message in messages %}
+        <p>{{ message }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endblock %}

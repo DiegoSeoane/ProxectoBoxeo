@@ -2,10 +2,13 @@ from django.urls import path
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.auth import views as auth_views
 
 
 urlpatterns = [
     path('', views.inicioHTML, name='indexPage'),
+    path('login/', views.inicio_sesion, name='login'),
+    path('logout/', views.custom_logout, name='logout'),
     path('rexistro/', views.rexistro_usuario, name='rexistroUsuario'),
     path('eventos/', views.eventosHTML, name='eventosPage'),
     path('competidores/', views.competidoresHTML, name='competidoresPage'),

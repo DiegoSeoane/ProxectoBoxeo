@@ -6,8 +6,9 @@ from django.db.models import Q, Count
 from .forms import CompetidorForm, CombateForm, EventoForm, RexistroUsuarioForm
 from django.urls import reverse
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth import get_user_model
 from django.contrib import messages
+from django.contrib.auth import logout
 
 
 def inicioHTML(request):
@@ -254,3 +255,27 @@ def rexistro_usuario(request):
     else:
         form = RexistroUsuarioForm()
     return render(request, 'rexistro.html', {'form': form})
+
+User = get_user_model()
+
+
+def inicio_sesion(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        
+        # Autenticamos al usuario con el username
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
+            login(request, user)
+            return redirect('indexPage')  # Redirige a la página principal
+        else:
+            messages.error(request, 'Credenciales inválidas')
+            return render(request, 'login.html', {'error': 'Credenciales inválidas'})
+    
+    return render(request, 'login.html')
+  
+def custom_logout(request):
+    logout(request)
+    return redirect('indexPage')

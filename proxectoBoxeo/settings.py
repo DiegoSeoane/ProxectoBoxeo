@@ -16,6 +16,10 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+LOGOUT_REDIRECT_URL = 'indexPage'
+
+AUTH_USER_MODEL = 'boxGal.Usuario'
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
