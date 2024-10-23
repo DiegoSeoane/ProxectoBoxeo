@@ -13,4 +13,13 @@
     <a href="{% url 'engadirCombate' %}" class="btn rounded-pill btn-warning">Combates</a>
     <a href="{% url 'engadirEvento' %}" class="btn rounded-pill btn-warning">Eventos</a>
   </div>
+
+  {% if lista != '' %}
+    <h2>Engadir {{ tipo }}</h2>
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn btn-primary">Engadir {{ tipo }}</button>
+    </form>
+  {% endif %}
 {% endblock %}

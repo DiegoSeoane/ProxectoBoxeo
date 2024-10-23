@@ -15,7 +15,11 @@
       {% for competidor in listaCompetidores %}
         <li class="list-group-item list-group-item-action">
           <a href="{% url 'competidoresPage' %}{{ competidor.id_competidor }}" class="nav-link text-dark">
-            <img src="{{ competidor.foto_competidor.url }}" alt="{{ competidor.nome_competidor }} {{ competidor.apelidos_competidor }}" style="height: 50px;" class="mx-2" />
+            {% if competidor.foto_competidor %}
+              <img src="/media/{{ competidor.foto_competidor }}" alt="{{ competidor.nome_competidor }} {{ competidor.apelidos_competidor }}" style="height: 50px;" class="mx-2" />
+            {% else %}
+              <img src="/media/competidores/defaultCompetidor.png" alt="{{ competidor.nome_competidor }} {{ competidor.apelidos_competidor }}" style="height: 50px;" class="mx-2" />
+            {% endif %}
             {{ competidor.nome_competidor }} {{ competidor.apelidos_competidor }}
           </a>
         </li>

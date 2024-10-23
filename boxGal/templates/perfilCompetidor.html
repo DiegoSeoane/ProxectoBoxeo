@@ -7,7 +7,11 @@
     <div class="row p-5">
       <div class="col-12 col-md-6">
         <div class="card">
-          <img src="{{ competidor.foto_competidor.url }}" alt="" class="card-img-top" />
+          {% if competidor.foto_competidor %}
+            <img src="{{ competidor.foto_competidor.url }}" alt="" class="card-img-top" />
+          {% else %}
+            <img src="/media/competidores/defaultCompetidor.png" alt="" class="card-img-top" />
+          {% endif %}
           <div class="card-body bg-success text-light">
             <h5 class="card-title">{{ competidor.nome_competidor }} {{ competidor.apelidos_competidor }}</h5>
           </div>
@@ -45,9 +49,13 @@
       <h1 class="text-center">Combates</h1>
       <ul class="list-group">
         {% for combate in listaCombates %}
-          <li class="list-group-item text-center">
-            <a href="{% url 'combateEspecifico' combate.id_combate %}">{{ combate }}</a>
-          </li>
+          {% if combate.boxeador_azul == competidor or combate.boxeador_vermello == competidor %}
+            <li class="list-group-item text-center">
+              <a href="{% url 'combateEspecifico' combate.id_combate %}">{{ combate }}</a>
+            </li>
+          {% else %}
+            <li class="list-group-item text-center">Non ten combates rexistrados.</li>
+          {% endif %}
         {% endfor %}
       </ul>
     </div>

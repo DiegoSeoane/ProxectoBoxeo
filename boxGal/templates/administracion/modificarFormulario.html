@@ -10,7 +10,7 @@
     <a href="{% url 'eliminar' %}" class="btn p-3 px-5 mx-3 btn-danger rounded-pill">Eliminar</a>
   </div>
 
-  <h1>Modificar Competidor</h1>
+  <h1>Modificar {{ tipo }}</h1>
   <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.as_p }}

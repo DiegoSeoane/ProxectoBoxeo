@@ -20,9 +20,11 @@ def inicioHTML(request):
 
 def eventosHTML(request):
   listaEventos = Evento.objects.all().values()
+  combates = Combate.objects.all()
   template = loader.get_template('eventos.html')
   contido = {
-    'listaEventos':listaEventos
+    'listaEventos':listaEventos,
+    'combates':combates
   }
   return HttpResponse(template.render(contido, request))
 
@@ -64,17 +66,15 @@ def combateHTML(request, id):
 
 def administracion(request):  
   template = loader.get_template('administracion/administrador.html')
-  contido = {
-    
-  }
+  contido = {}
   return HttpResponse(template.render(contido, request))
 
 # Engadir información (CRUD)
 def engadir(request):
   template = loader.get_template('administracion/engadir.html')
-  lista = request.GET.get('lista','competidores')
+  lista = request.GET.get('','')
   
-  contido = {}
+  contido = {'lista':lista}
   if lista == 'competidores':
     contido['lista'] = Competidor.objects.all(),
     contido['tipo'] = 'competidores'
@@ -90,6 +90,7 @@ def engadir(request):
   return HttpResponse(template.render(contido, request))
 
 def engadir_competidor(request):
+    tipo = 'Competidor'
     if request.method == "POST":
         form = CompetidorForm(request.POST, request.FILES)
         if form.is_valid():
@@ -98,9 +99,10 @@ def engadir_competidor(request):
     else:
         form = CompetidorForm()
     
-    return render(request, 'administracion/engadirCompetidor.html', {'form': form})
+    return render(request, 'administracion/engadir.html', {'form': form, 'tipo':tipo})
 
 def engadir_combate(request):
+    tipo = 'Combate'
     if request.method == "POST":
         form = CombateForm(request.POST, request.FILES)
         if form.is_valid():
@@ -109,9 +111,10 @@ def engadir_combate(request):
     else:
         form = CombateForm()
     
-    return render(request, 'administracion/engadirCombate.html', {'form': form})
+    return render(request, 'administracion/engadir.html', {'form': form, 'tipo':tipo})
 
 def engadir_evento(request):
+    tipo = 'Evento'        
     if request.method == "POST":
         form = EventoForm(request.POST, request.FILES)
         if form.is_valid():
@@ -120,29 +123,11 @@ def engadir_evento(request):
     else:
         form = EventoForm()
     
-    return render(request, 'administracion/engadirCompetidor.html', {'form': form})
+    return render(request, 'administracion/engadir.html', {'form': form, 'tipo':tipo})
 
-
-def modificar(request):
-  template = loader.get_template('administracion/modificar.html')
-  lista = request.GET.get('lista','competidores')
-  
-  contido = {}
-  if lista == 'competidores':
-    contido['lista'] = Competidor.objects.all(),
-    contido['tipo'] = 'competidores'
-  
-  elif lista == 'combates':
-    contido['lista'] = Combate.objects.all(),
-    contido['tipo'] = 'combates'
-  
-  elif lista == 'eventos':
-    contido['lista'] = Evento.objects.all(),
-    contido['tipo'] = 'eventos'
-  
-  return HttpResponse(template.render(contido, request))
 
 # Modificar información (CRUD)
+
 
 def modificar(request):
   template = loader.get_template('administracion/modificar.html')
@@ -165,6 +150,7 @@ def modificar(request):
 
 def modificar_competidor(request,competidor_id):
   competidor = get_object_or_404(Competidor, id_competidor=competidor_id)
+  tipo = 'Competidor'
   if request.method == 'POST':
     form = CompetidorForm(request.POST, request.FILES, instance=competidor)
     if form.is_valid():
@@ -172,9 +158,10 @@ def modificar_competidor(request,competidor_id):
       return redirect('administracion')
   else:
     form = CompetidorForm(instance=competidor)
-  return render(request, 'administracion/modificarCompetidor.html', {'form':form})
+  return render(request, 'administracion/modificarFormulario.html', {'form':form, 'tipo':tipo})
 
 def modificar_combate(request,combate_id):
+  tipo = 'Combate'
   combate = get_object_or_404(Combate, id_combate=combate_id)
   if request.method == 'POST':
     form = CombateForm(request.POST, request.FILES, instance=combate)
@@ -183,9 +170,10 @@ def modificar_combate(request,combate_id):
       return redirect('administracion')
   else:
     form = CombateForm(instance=combate)
-  return render(request, 'administracion/modificarCombate.html', {'form':form})
+  return render(request, 'administracion/modificarFormulario.html', {'form':form,'tipo':tipo})
 
 def modificar_evento(request,evento_id):
+  tipo = 'Evento'
   evento = get_object_or_404(Evento, id_evento=evento_id)
   if request.method == 'POST':
     form = EventoForm(request.POST, request.FILES, instance=evento)
@@ -194,7 +182,7 @@ def modificar_evento(request,evento_id):
       return redirect('administracion')
   else:
     form = EventoForm(instance=evento)
-  return render(request, 'administracion/modificarEvento.html', {'form':form})
+  return render(request, 'administracion/modificarFormulario.html', {'form':form,'tipo':tipo})
 
 # Eliminar información (CRUD)
 def eliminar(request):
