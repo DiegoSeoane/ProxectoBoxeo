@@ -13,13 +13,38 @@
     <a href="{% url 'engadirCombate' %}" class="btn rounded-pill btn-warning">Combates</a>
     <a href="{% url 'engadirEvento' %}" class="btn rounded-pill btn-warning">Eventos</a>
   </div>
+  <hr />
 
   {% if lista != '' %}
-    <h2>Engadir {{ tipo }}</h2>
-    <form method="POST" enctype="multipart/form-data">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <button type="submit" class="btn btn-primary">Engadir {{ tipo }}</button>
-    </form>
+    <div class="container mt-5">
+      <h2 class="text-center mb-4">Engadir {{ tipo }}</h2>
+
+      <div class="row justify-content-center">
+        <div class="col-md-8">
+          <form method="POST" enctype="multipart/form-data" class="bg-light p-5 rounded shadow-sm">
+            {% csrf_token %}
+
+            <!-- Mostrar mensaxes de erro -->
+            {% if form.errors %}
+              <div class="alert alert-danger">
+                <strong>Erro ao enviar o formulario:</strong>
+                <ul>
+                  {% for field in form %}
+                    {% for error in field.errors %}
+                      <li>{{ error }}</li>
+                    {% endfor %}
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endif %}
+
+            <div class="mb-3">{{ form.as_p }}</div>
+
+            <!-- Botón de enviar -->
+            <button type="submit" class="btn btn-primary btn-lg w-100">Engadir {{ tipo }}</button>
+          </form>
+        </div>
+      </div>
+    </div>
   {% endif %}
 {% endblock %}

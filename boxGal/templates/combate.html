@@ -3,12 +3,21 @@
   Combate
 {% endblock %}
 {% block corpo %}
-  <h1>Esquina Azul: {{ combate.boxeador_azul }}</h1>
-  <h1>Esquina Vermella: {{ combate.boxeador_vermello }}</h1>
-  <h1>Arbirto da contienda: {{ combate.arbitro }}</h1>
-  <h1>Peso: {{ combate.peso_combate }}</h1>
-  <h1>Categoría: {{ combate.categoria_combate }}</h1>
-  <h1>Resultado: {{ combate.resultado }}</h1>
-  <h1>{{ combate.data_combate }}</h1>
-  <h1>Likes: {{ likes.count }}</h1>
+  <div class="container mt-5">
+    <div class="card text-center">
+      <div class="card-header">
+        <h2>Detalles do Combate</h2>
+      </div>
+      <div class="card-body">
+        <h3 class="card-title">Esquina Azul: <span class="text-primary">{{ combate.boxeador_azul }}</span></h3>
+        <h3 class="card-title">Esquina Vermella: <span class="text-danger">{{ combate.boxeador_vermello }}</span></h3>
+        <h4 class="card-text">Árbitro da contienda: <strong>{{ combate.arbitro }}</strong></h4>
+        <h4 class="card-text">Peso: <strong>{{ combate.peso_combate }}</strong></h4>
+        <h4 class="card-text">Categoría: <strong>{{ combate.categoria_combate }}</strong></h4>
+        <h4 class="card-text">Resultado: <strong>{{ combate.resultado }}</strong></h4>
+        <h5 class="card-text text-muted">{{ combate.data_combate }}</h5>
+        <h5 class="card-text">Likes: <strong>{{ likes.count }}</strong></h5>
+      </div>
+    </div>
+  </div>
 {% endblock %}

@@ -3,9 +3,61 @@
   Rexistro
 {% endblock %}
 {% block corpo %}
-  <form method="POST" enctype="multipart/form-data">
+  <form method="POST" enctype="multipart/form-data" class="form-group container my-5">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Rexistrarse</button>
+    <!-- Mensaxes de erro -->
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    <div class="row">
+      <!-- Username -->
+      <div class="mb-3 col-lg-6 col-md-5 col-sm-12">
+        <label for="id_username" class="form-label">Nome de Usuario *</label>
+        {{ form.username }}
+        {% if form.username.errors %}
+          <div class="text-danger">{{ form.username.errors }}</div>
+        {% endif %}
+      </div>
+
+      <!-- Email -->
+      <div class="mb-3 col-lg-6 col-md-5 col-sm-12">
+        <label for="id_email" class="form-label">Correo Electrónico *</label>
+        {{ form.email }}
+        {% if form.email.errors %}
+          <div class="text-danger">{{ form.email.errors }}</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Foto de Perfil -->
+    <div class="mb-3 col-lg-6 col-md-7 col-sm-12">
+      <label for="id_fotoperfil" class="form-label">Foto de Perfil (Opcional)</label>
+      {{ form.fotoperfil }}
+      {% if form.fotoperfil.errors %}
+        <div class="text-danger">{{ form.fotoperfil.errors }}</div>
+      {% endif %}
+    </div>
+
+    <div class="row">
+      <!-- Password1 -->
+      <div class="mb-3 col-lg-6 col-md-5 col-sm-12">
+        <label for="id_password1" class="form-label">Contrasinal *</label>
+        {{ form.password1 }}
+        {% if form.password1.errors %}
+          <div class="text-danger">{{ form.password1.errors }}</div>
+        {% endif %}
+      </div>
+
+      <!-- Password2 -->
+      <div class="mb-3 col-lg-6 col-md-5 col-sm-12">
+        <label for="id_password2" class="form-label">Confirmar Contrasinal *</label>
+        {{ form.password2 }}
+        {% if form.password2.errors %}
+          <div class="text-danger">{{ form.password2.errors }}</div>
+        {% endif %}
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary col-3 my-4">Rexistrarse</button>
   </form>
 {% endblock %}

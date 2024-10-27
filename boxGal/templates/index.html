@@ -1,5 +1,9 @@
 {% extends 'header.html' %}
+{% block links %}
+  {% load static %}
 
+  <link href="{% static 'css/style.css' %}" rel="stylesheet" />
+{% endblock %}
 {% block title %}
   BoxGal
 {% endblock %}

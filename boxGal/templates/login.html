@@ -3,13 +3,16 @@
   Iniciar Sesion
 {% endblock %}
 {% block corpo %}
-  <form method="POST" action="{% url 'login' %}">
+  <form method="POST" action="{% url 'login' %}" class="form-group text-center container w-50 mt-5">
     {% csrf_token %}
-    <input type="text" name="username" placeholder="Nombre de usuario" required />
-    <input type="password" name="password" placeholder="Contraseña" required />
-    <button type="submit">Iniciar Sesión</button>
+    <input type="text" class="form-control my-3" name="username" placeholder="Nome de usuario" required />
+    <input type="password" class="form-control my-3" name="password" placeholder="Contrasinal" required />
+    <button type="submit" class="form-control my-3 btn btn-primary w-50">Iniciar Sesión</button>
   </form>
-  <a href="{% url 'rexistroUsuario' %}" class="btn btn-danger">Rexistrarse</a>
+  <p class="mt-5 text-md-end text-center m-5">
+    Non estás rexistrado? Pulsa aquí:
+    <a href="{% url 'rexistroUsuario' %}" class="btn btn-danger">Rexistrarse</a>
+  </p>
   {% if messages %}
     <div class="alert alert-danger">
       {% for message in messages %}
