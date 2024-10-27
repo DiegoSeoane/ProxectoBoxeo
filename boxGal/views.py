@@ -13,13 +13,14 @@ from django.contrib.auth import logout
 
 def inicioHTML(request):
   template = loader.get_template('index.html')
+  listaEventos = Evento.objects.all().values().order_by('-id_evento')[:3]
   contido = {
-    
+    'listaEventos':listaEventos,
   }
   return HttpResponse(template.render(contido, request))
 
 def eventosHTML(request):
-  listaEventos = Evento.objects.all().values()
+  listaEventos = Evento.objects.all().values().order_by('-id_evento')
   combates = Combate.objects.all()
   template = loader.get_template('eventos.html')
   contido = {
@@ -29,7 +30,7 @@ def eventosHTML(request):
   return HttpResponse(template.render(contido, request))
 
 def competidoresHTML(request):
-  listaCompetidores = Competidor.objects.all().values()
+  listaCompetidores = Competidor.objects.all().values().order_by('-nome_competidor')
   contido = {
     'listaCompetidores':listaCompetidores
   }
