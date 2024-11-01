@@ -16,43 +16,82 @@
   </div>
   <hr />
 
-  <div class="container">
+  <div class="container mt-5">
     {% if tipo == 'competidores' %}
-      <h2>Competidores:</h2>
-      <ul>
-        {% for competidor in lista.0 %}
-          <li>
-            {{ competidor }} <form action="{% url 'eliminarCompetidor' competidor.id_competidor %}" method="POST">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-danger">Eliminar</button>
-            </form>
-          </li>
-        {% endfor %}
-      </ul>
+      <h2 class="text-center mb-4">Competidores</h2>
+      <table class="table table-striped table-hover shadow-sm">
+        <thead class="table-dark">
+          <tr>
+            <th scope="col">Nome</th>
+            <th scope="col">Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for competidor in lista.0 %}
+            <tr>
+              <td>{{ competidor }}</td>
+              <td>
+                <form action="{% url 'eliminarCompetidor' competidor.id_competidor %}" method="POST" style="display: inline;">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     {% elif tipo == 'combates' %}
-      <h2>Combates:</h2>
-      <ul>
-        {% for combate in lista.0 %}
-          <li>
-            {{ combate }} - {{ combate.evento_combate }} - {{ combate.data_combate }}<form action="{% url 'eliminarCombate' combate.id_combate %}" method="POST">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-danger">Eliminar</button>
-            </form>
-          </li>
-        {% endfor %}
-      </ul>
+      <h2 class="text-center mb-4">Combates</h2>
+      <table class="table table-striped table-hover shadow-sm">
+        <thead class="table-dark">
+          <tr>
+            <th scope="col">Combate</th>
+            <th scope="col">Evento</th>
+            <th scope="col">Data</th>
+            <th scope="col">Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for combate in lista.0 %}
+            <tr>
+              <td>{{ combate }}</td>
+              <td>{{ combate.evento_combate }}</td>
+              <td>{{ combate.data_combate }}</td>
+              <td>
+                <form action="{% url 'eliminarCombate' combate.id_combate %}" method="POST" style="display: inline;">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     {% elif tipo == 'eventos' %}
-      <h2>Combates:</h2>
-      <ul>
-        {% for evento in lista.0 %}
-          <li>
-            {{ evento }} {{ evento.data_evento }}<form action="{% url 'eliminarEvento' evento.id_evento %}" method="POST">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-danger">Eliminar</button>
-            </form>
-          </li>
-        {% endfor %}
-      </ul>
+      <h2 class="text-center mb-4">Eventos</h2>
+      <table class="table table-striped table-hover shadow-sm">
+        <thead class="table-dark">
+          <tr>
+            <th scope="col">Evento</th>
+            <th scope="col">Data</th>
+            <th scope="col">Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for evento in lista.0 %}
+            <tr>
+              <td>{{ evento }}</td>
+              <td>{{ evento.data_evento }}</td>
+              <td>
+                <form action="{% url 'eliminarEvento' evento.id_evento %}" method="POST" style="display: inline;">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     {% endif %}
   </div>
 {% endblock %}

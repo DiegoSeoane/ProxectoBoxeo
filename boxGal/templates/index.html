@@ -9,8 +9,8 @@
 {% endblock %}
 
 {% block corpo %}
-  <div class="container">
-    <div id="carouselBoxeo" class="carousel slide m-auto my-5 w-50 text-center" data-bs-ride="carousel">
+  <div class="container-fluid p-0">
+    <div id="carouselBoxeo" class="carousel slide text-center d-none d-sm-block" data-bs-ride="carousel">
       <div class="carousel-indicators">
         <button type="button" data-bs-target="#carouselBoxeo" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
         <button type="button" data-bs-target="#carouselBoxeo" data-bs-slide-to="1" aria-label="Slide 2"></button>
@@ -18,73 +18,82 @@
       </div>
       <div class="carousel-inner">
         <div class="carousel-item active">
-          <img src="/media/decoracion/car1.jpg" class="d-block w-100" alt="1" />
+          <img src="/media/decoracion/car1.jpg" class="d-block w-100 img-fluid carousel-img" alt="1" />
         </div>
         <div class="carousel-item">
-          <img src="/media/decoracion/car2.jpeg" class="d-block w-100" alt="2" />
+          <img src="/media/decoracion/car2.jpeg" class="d-block w-100 img-fluid carousel-img" alt="2" />
         </div>
         <div class="carousel-item">
-          <img src="/media/decoracion/car3.jpg" class="d-block w-100" alt="3" />
+          <img src="/media/decoracion/car3.jpg" class="d-block w-100 img-fluid carousel-img" alt="3" />
         </div>
       </div>
-      <button class="carousel-control-prev" type="button" data-bs-target="#carouselBoxeo" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Previous</span>
-      </button>
-      <button class="carousel-control-next" type="button" data-bs-target="#carouselBoxeo" data-bs-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Next</span>
-      </button>
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselBoxeo" data-bs-slide="prev"></button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselBoxeo" data-bs-slide="next"></button>
     </div>
   </div>
-  <div class="card-group">
+  <div class="container mt-2">
     <div class="row">
-      <div class="card col-md-5 col-lg-3" style="width: 18rem;">
-        <div class="card-header">Seguidos</div>
+      <div class="col-12 col-md-5 col-lg-3 mb-3">
+        <div class="card h-100">
+          <div class="card-header">
+            <h3>
+              {% if user.is_authenticated %}
+                Competidores Seguidos
+              {% else %}
+                Competidores Populares
+              {% endif %}
+            </h3>
+          </div>
+          <ul class="list-group list-group-flush">
+            {% for competidor in page_obj %}
+              <li class="list-group-item list-group-item-action">
+                <a href="{% url 'competidoresPage' %}{{ competidor.id_competidor }}" class="nav-link text-dark">
+                  {{ fav.nome_competidor }}
+                  <img src="{% if competidor.foto_competidor %}
+                      {{ competidor.foto_competidor.url }}
+                    {% else %}
+                      
+                      
+                      
+                      
+                      
+                      
+                      
+                      
+                      /media/competidores/defaultCompetidor.png
 
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item list-group-item-action">
-            <a href="" class="nav-link text-dark">Competidor 1</a>
-          </li>
-          <li class="list-group-item list-group-item-action">
-            <a href="" class="nav-link text-dark">Lorem ipsum dolor sit amet.</a>
-          </li>
-          <li class="list-group-item list-group-item-action">
-            <a href="" class="nav-link text-dark">Competidor 3</a>
-          </li>
-          <li class="list-group-item list-group-item-action">
-            <a href="" class="nav-link text-dark">Competidor 4</a>
-          </li>
-          <li class="list-group-item list-group-item-action">
-            <a href="" class="nav-link text-dark">Competidor 5</a>
-          </li>
-          <li class="list-group-item list-group-item-action">
-            <a href="" class="nav-link text-dark">Competidor 6</a>
-          </li>
-          <li class="list-group-item list-group-item-action">
-            <a href="" class="nav-link text-dark">Competidor 7</a>
-          </li>
-          <li class="list-group-item list-group-item-action">
-            <a href="" class="nav-link text-dark">Competidor 8</a>
-          </li>
-          <li class="list-group-item list-group-item-action">
-            <a href="" class="nav-link text-dark">Competidor 9</a>
-          </li>
-        </ul>
+
+
+
+
+
+
+
+                    {% endif %}"
+                    class="img-inicio"
+                    alt="{{ competidor.nome_competidor }}" />
+                  {{ competidor.nome_competidor }}
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
       </div>
-      {% for evento in listaEventos %}
-        <div class="card col-lg-3">
-          {% if evento.foto_evento %}
-            <img src="/media/{{ evento.foto_evento }}" class="card-img-top mt-3" alt="{{ evento.nome_evento }}" />
-          {% else %}
-            <img src="/media/eventos/defaultEvento.jpg" class="card-img-top mt-3" alt="{{ evento.nome_evento }}" />
-          {% endif %}
-          <div class="card-body">
-            <h5 class="card-title">{{ evento.nome_evento }}</h5>
 
-            <div class="card-text">
-              <p>{{ evento.lugar_evento }}</p>
-              <p>{{ evento.data_evento }}</p>
+      {% for evento in listaEventos %}
+        <div class="col-12 col-md-6 col-lg-3 mb-3">
+          <div class="card h-100">
+            {% if evento.foto_evento %}
+              <img src="/media/{{ evento.foto_evento }}" class="card-img-top mt-3" alt="{{ evento.nome_evento }}" />
+            {% else %}
+              <img src="/media/eventos/defaultEvento.jpg" class="card-img-top mt-3" alt="{{ evento.nome_evento }}" />
+            {% endif %}
+            <div class="card-body">
+              <h5 class="card-title">{{ evento.nome_evento }}</h5>
+              <div class="card-text">
+                <p>{{ evento.lugar_evento }}</p>
+                <p>{{ evento.data_evento }}</p>
+              </div>
             </div>
           </div>
         </div>

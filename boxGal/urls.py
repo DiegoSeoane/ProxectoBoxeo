@@ -27,4 +27,6 @@ urlpatterns = [
     path('engadir/competidor/', views.engadir_competidor, name='engadirCompetidor'),
     path('engadir/combate/', views.engadir_combate, name='engadirCombate'),
     path('engadir/evento/', views.engadir_evento, name='engadirEvento'),
+    path('alternar_seguir/<int:competidor_id>/', views.alternar_seguir, name='alternar_seguir'),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) # Esta ultima linea é necesaria para o uso de media en local

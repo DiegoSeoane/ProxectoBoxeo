@@ -8,9 +8,9 @@
       <div class="col-12 col-md-6">
         <div class="card">
           {% if competidor.foto_competidor %}
-            <img src="{{ competidor.foto_competidor.url }}" alt="" class="card-img-top" />
+            <img src="{{ competidor.foto_competidor.url }}" alt="{{ competidor.nome_competidor }}" class="card-img-top" />
           {% else %}
-            <img src="/media/competidores/defaultCompetidor.png" alt="" class="card-img-top" />
+            <img src="/media/competidores/defaultCompetidor.png" alt="{{ competidor.nome_competidor }}" class="card-img-top" />
           {% endif %}
           <div class="card-body bg-success text-light">
             <h5 class="card-title">{{ competidor.nome_competidor }} {{ competidor.apelidos_competidor }}</h5>
@@ -19,28 +19,28 @@
       </div>
       <div class="col-12 col-md-6">
         <div class="row my-5">
-          <div class="progress">
-            <div class="progress-bar bg-success" role="progressbar" style="width:75%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">Victorias</div>
-            <p>{{ competidor.vitorias }}</p>
+          <!-- Stats -->
+          <div id="animations-example-4">
+            <table class="charts-css column show-labels hide-data data-spacing-5 show-primary-axis">
+              <tbody>
+                <tr>
+                  <th scope="row">Vitorias</th> <td style="--size: {{ porcentaxeVitorias }}; background:green;"></td>
+                </tr> <tr>
+                  <th scope="row">Derrotas</th> <td style="--size: {{ porcentaxeDerrotas }}; background:red;"></td>
+                </tr> <tr>
+                  <th scope="row">Empates</th> <td style="--size: {{ porcentaxeEmpates }}; background:blue;"></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-          <hr />
-          <div class="progress">
-            <div class="progress-bar bg-danger" role="progressbar" style="width:25%" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">Derrotas</div>
-            <p>{{ competidor.derrotas }}</p>
-          </div>
-          <hr />
-          <div class="progress">
-            <div class="progress-bar" role="progressbar" style="width: 20%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">Empates</div>
-            <p>{{ competidor.empates }}</p>
-          </div>
-          <hr />
         </div>
+        <hr />
         <div class="row">
           <h3>Total Combates:</h3>
           <h2>{{ totalCombates }}</h2>
-          <h3>Victorias lado azul:</h3>
+          <h3>Vitorias lado azul:</h3>
           <h2>{{ numeroCombates_azul }}</h2>
-          <h3>Victorias lado vermello:</h3>
+          <h3>Vitorias lado vermello:</h3>
           <h2>{{ numeroCombates_vermello }}</h2>
         </div>
       </div>

@@ -5,17 +5,27 @@ from .models import Competidor,Combate,Evento,Usuario
 from django.db.models import Q, Count
 from .forms import CompetidorForm, CombateForm, EventoForm, RexistroUsuarioForm
 from django.urls import reverse
-from django.contrib.auth import authenticate, login
-from django.contrib.auth import get_user_model
+from django.contrib.auth import authenticate, login, get_user_model, logout
 from django.contrib import messages
-from django.contrib.auth import logout
+from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
 
 
 def inicioHTML(request):
   template = loader.get_template('index.html')
-  listaEventos = Evento.objects.all().values().order_by('-id_evento')[:3]
+  listaEventos = Evento.objects.all().values()[:3]
+  if request.user.is_authenticated:          
+      competidores = request.user.favoritos.all()
+  else:        
+      competidores = Competidor.objects.annotate(num_seguidores=Count('seguidores')).order_by('-num_seguidores')
+  paginator = Paginator(competidores, 6)
+  page_number = request.GET.get('page')
+  page_obj = paginator.get_page(page_number)
+
+  
   contido = {
     'listaEventos':listaEventos,
+    'page_obj':page_obj
   }
   return HttpResponse(template.render(contido, request))
 
@@ -37,18 +47,39 @@ def competidoresHTML(request):
   template = loader.get_template('competidores.html')
   return HttpResponse(template.render(contido, request))
 
+@login_required
+def alternar_seguir(request, competidor_id):
+    competidor = get_object_or_404(Competidor, id_competidor=competidor_id)
+    if competidor in request.user.favoritos.all():
+        request.user.favoritos.remove(competidor)
+    else:
+        request.user.favoritos.add(competidor)
+    return redirect('competidoresPage')
+
 def perfilCompetidorHTML(request, id):
   competidorEspecifico = Competidor.objects.get(id_competidor=id)
   numeroCombates_azul = Combate.objects.filter(boxeador_azul_id=id).count()
   numeroCombates_vermello = Combate.objects.filter(boxeador_vermello_id=id).count()
   totalCombates = Combate.objects.filter(Q(boxeador_azul_id=id) | Q(boxeador_vermello_id=id)).count()
   listaCombates = Combate.objects.all()
+  vitorias= Competidor.objects.filter(vitorias=id)
+  derrotas= Competidor.objects.filter(derrotas=id)
+  empates= Competidor.objects.filter(empates=id)
+  porcentaxeVitorias = 50/100
+  porcentaxeDerrotas = 45/100
+  porcentaxeEmpates = 5/100
   contido = {
     'competidor':competidorEspecifico,
     'totalCombates':totalCombates,
     'numeroCombates_azul':numeroCombates_azul,
     'numeroCombates_vermello':numeroCombates_vermello,
     'listaCombates':listaCombates,
+    'vitorias':vitorias,
+    'derrotas':derrotas,
+    'empates':empates,
+    'porcentaxeVitorias':porcentaxeVitorias,
+    'porcentaxeDerrotas':porcentaxeDerrotas,
+    'porcentaxeEmpates':porcentaxeEmpates
   }
   template = loader.get_template('perfilCompetidor.html')
   return HttpResponse(template.render(contido, request))

@@ -24,6 +24,8 @@ class Evento(models.Model):
     data_evento = models.DateField()
     foto_evento = models.ImageField(upload_to='eventos/', blank=True, null=True)
 
+    #Foto de evento na ruta /media/eventos, campo opcional
+
     def __str__(self):
         return self.nome_evento
     

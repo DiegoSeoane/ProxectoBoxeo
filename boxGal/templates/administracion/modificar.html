@@ -14,34 +14,71 @@
     <a href="?lista=eventos" class="btn rounded-pill btn-warning">Eventos</a>
   </div>
   <hr />
-  <div class="container">
+  <div class="container mt-5">
     {% if tipo == 'competidores' %}
-      <h2>Competidores:</h2>
-      <ul>
-        {% for competidor in lista.0 %}
-          <li>
-            {{ competidor }} <a href="{% url 'modificar_competidor' competidor.id_competidor %}">Modificar</a>
-          </li>
-        {% endfor %}
-      </ul>
+      <h2 class="text-center mb-4">Competidores</h2>
+      <table class="table table-striped table-hover shadow-sm">
+        <thead class="table-dark">
+          <tr>
+            <th scope="col">Nombre</th>
+            <th scope="col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for competidor in lista.0 %}
+            <tr>
+              <td>{{ competidor }}</td>
+              <td>
+                <a href="{% url 'modificar_competidor' competidor.id_competidor %}" class="btn btn-primary btn-sm">Modificar</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     {% elif tipo == 'combates' %}
-      <h2>Combates:</h2>
-      <ul>
-        {% for combate in lista.0 %}
-          <li>
-            {{ combate }} {{ combate.data_combate }} <a href="{% url 'modificar_combate' combate.id_combate %}">Modificar</a>
-          </li>
-        {% endfor %}
-      </ul>
+      <h2 class="text-center mb-4">Combates</h2>
+      <table class="table table-striped table-hover shadow-sm">
+        <thead class="table-dark">
+          <tr>
+            <th scope="col">Combate</th>
+            <th scope="col">Fecha</th>
+            <th scope="col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for combate in lista.0 %}
+            <tr>
+              <td>{{ combate }}</td>
+              <td>{{ combate.data_combate }}</td>
+              <td>
+                <a href="{% url 'modificar_combate' combate.id_combate %}" class="btn btn-primary btn-sm">Modificar</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     {% elif tipo == 'eventos' %}
-      <h2>Eventos:</h2>
-      <ul>
-        {% for evento in lista.0 %}
-          <li>
-            {{ evento }} {{ evento.data_evento }} <a href="{% url 'modificar_evento' evento.id_evento %}">Modificar</a>
-          </li>
-        {% endfor %}
-      </ul>
+      <h2 class="text-center mb-4">Eventos</h2>
+      <table class="table table-striped table-hover shadow-sm">
+        <thead class="table-dark">
+          <tr>
+            <th scope="col">Evento</th>
+            <th scope="col">Fecha</th>
+            <th scope="col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for evento in lista.0 %}
+            <tr>
+              <td>{{ evento }}</td>
+              <td>{{ evento.data_evento }}</td>
+              <td>
+                <a href="{% url 'modificar_evento' evento.id_evento %}" class="btn btn-primary btn-sm">Modificar</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     {% endif %}
   </div>
 {% endblock %}
