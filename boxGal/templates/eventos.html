@@ -22,13 +22,20 @@
       <div class="row w-50 mx-auto">
         <h1 class="text-center">Combates</h1>
         <ul class="list-group">
-          {% for combate in combates %}
-            {% if combate.evento_combate.id_evento == evento.id_evento %}
-              <li class="list-group-item text-center">
-                <a class="nav-link" href="{% url 'combateEspecifico' combate.id_combate %}">{{ combate }}</a>
-              </li>
-            {% endif %}
-          {% endfor %}
+          {% with combate_atopado=False %}
+            {% for combate in combates %}
+              {% if combate.evento_combate.id_evento == evento.id_evento %}
+                {% with combate_atopado=True %}
+                  <li class="list-group-item text-center">
+                    <a class="nav-link" href="{% url 'combateEspecifico' combate.id_combate %}">{{ combate }}</a>
+                  </li>
+                {% endwith %}
+              {% endif %}
+            {% endfor %}
+          {% endwith %}
+          {% if not combate_atopado %}
+            <li class="list-group-item text-center">Non hai combates rexistrados</li>
+          {% endif %}
         </ul>
       </div>
     </div>

@@ -38,25 +38,32 @@
         <div class="row">
           <h3>Total Combates:</h3>
           <h2>{{ totalCombates }}</h2>
-          <h3>Vitorias lado azul:</h3>
-          <h2>{{ numeroCombates_azul }}</h2>
-          <h3>Vitorias lado vermello:</h3>
-          <h2>{{ numeroCombates_vermello }}</h2>
+          <h3>Total Vitorias:</h3>
+          <h2>{{ vitorias }}</h2>
+          <h3>Total Derrotas:</h3>
+          <h2>{{ derrotas }}</h2>
+          <h3>Total Empates:</h3>
+          <h2>{{ empates }}</h2>
         </div>
       </div>
     </div>
     <div class="row w-50 mx-auto">
       <h1 class="text-center">Combates</h1>
       <ul class="list-group">
-        {% for combate in listaCombates %}
-          {% if combate.boxeador_azul == competidor or combate.boxeador_vermello == competidor %}
-            <li class="list-group-item text-center">
-              <a href="{% url 'combateEspecifico' combate.id_combate %}">{{ combate }}</a>
-            </li>
-          {% else %}
-            <li class="list-group-item text-center">Non ten combates rexistrados.</li>
-          {% endif %}
-        {% endfor %}
+        {% with combate_atopado=False %}
+          {% for combate in listaCombates %}
+            {% if combate.boxeador_azul == competidor or combate.boxeador_vermello == competidor %}
+              {% with combate_atopado=True %}
+                <li class="list-group-item text-center">
+                  <a href="{% url 'combateEspecifico' combate.id_combate %}">{{ combate }}</a>
+                </li>
+              {% endwith %}
+            {% endif %}
+          {% endfor %}
+        {% endwith %}
+        {% if not combate_atopado %}
+          <li class="list-group-item text-center">Non ten combates rexistrados.</li>
+        {% endif %}
       </ul>
     </div>
   </div>

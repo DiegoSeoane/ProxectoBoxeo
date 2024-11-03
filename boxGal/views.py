@@ -18,7 +18,7 @@ def inicioHTML(request):
       competidores = request.user.favoritos.all()
   else:        
       competidores = Competidor.objects.annotate(num_seguidores=Count('seguidores')).order_by('-num_seguidores')
-  paginator = Paginator(competidores, 6)
+  paginator = Paginator(competidores, 5)
   page_number = request.GET.get('page')
   page_obj = paginator.get_page(page_number)
 
@@ -60,14 +60,18 @@ def perfilCompetidorHTML(request, id):
   competidorEspecifico = Competidor.objects.get(id_competidor=id)
   numeroCombates_azul = Combate.objects.filter(boxeador_azul_id=id).count()
   numeroCombates_vermello = Combate.objects.filter(boxeador_vermello_id=id).count()
-  totalCombates = Combate.objects.filter(Q(boxeador_azul_id=id) | Q(boxeador_vermello_id=id)).count()
   listaCombates = Combate.objects.all()
-  vitorias= Competidor.objects.filter(vitorias=id)
-  derrotas= Competidor.objects.filter(derrotas=id)
-  empates= Competidor.objects.filter(empates=id)
-  porcentaxeVitorias = 50/100
-  porcentaxeDerrotas = 45/100
-  porcentaxeEmpates = 5/100
+  vitorias= competidorEspecifico.vitorias
+  derrotas= competidorEspecifico.derrotas
+  empates= competidorEspecifico.empates
+  totalCombates = vitorias + derrotas + empates
+  if totalCombates > 0:
+    # As estadisticas necesitan un numero menor a 1 para que funcione correctamente
+    porcentaxeVitoriasStats = (vitorias/totalCombates)
+    porcentaxeDerrotasStats = (derrotas/totalCombates)
+    porcentaxeEmpatesStats = (empates/totalCombates)
+  else:
+    porcentaxeVitoriasStats = porcentaxeDerrotasStats = porcentaxeEmpatesStats = 0
   contido = {
     'competidor':competidorEspecifico,
     'totalCombates':totalCombates,
@@ -77,9 +81,9 @@ def perfilCompetidorHTML(request, id):
     'vitorias':vitorias,
     'derrotas':derrotas,
     'empates':empates,
-    'porcentaxeVitorias':porcentaxeVitorias,
-    'porcentaxeDerrotas':porcentaxeDerrotas,
-    'porcentaxeEmpates':porcentaxeEmpates
+    'porcentaxeVitorias':porcentaxeVitoriasStats,
+    'porcentaxeDerrotas':porcentaxeDerrotasStats,
+    'porcentaxeEmpates':porcentaxeEmpatesStats
   }
   template = loader.get_template('perfilCompetidor.html')
   return HttpResponse(template.render(contido, request))
