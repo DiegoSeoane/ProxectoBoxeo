@@ -16,6 +16,7 @@
             <h5 class="card-title">{{ competidor.nome_competidor }} {{ competidor.apelidos_competidor }}</h5>
           </div>
         </div>
+        <p>Seguidores: {{ competidor.seguidores.all.count }}</p>
       </div>
       <div class="col-12 col-md-6">
         <div class="row my-5">
@@ -50,18 +51,15 @@
     <div class="row w-50 mx-auto">
       <h1 class="text-center">Combates</h1>
       <ul class="list-group">
-        {% with combate_atopado=False %}
+        {% if listaCombates %}
           {% for combate in listaCombates %}
             {% if combate.boxeador_azul == competidor or combate.boxeador_vermello == competidor %}
-              {% with combate_atopado=True %}
-                <li class="list-group-item text-center">
-                  <a href="{% url 'combateEspecifico' combate.id_combate %}">{{ combate }}</a>
-                </li>
-              {% endwith %}
+              <li class="list-group-item text-center">
+                <a href="{% url 'combateEspecifico' combate.id_combate %}" class="text-decoration-none">{{ combate }}</a>
+              </li>
             {% endif %}
           {% endfor %}
-        {% endwith %}
-        {% if not combate_atopado %}
+        {% else %}
           <li class="list-group-item text-center">Non ten combates rexistrados.</li>
         {% endif %}
       </ul>

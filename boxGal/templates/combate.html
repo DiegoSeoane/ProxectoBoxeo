@@ -4,20 +4,67 @@
 {% endblock %}
 {% block corpo %}
   <div class="container mt-5">
-    <div class="card text-center">
-      <div class="card-header">
+    <div class="card">
+      <div class="card-header text-center">
         <h2>Detalles do Combate</h2>
       </div>
       <div class="card-body">
-        <h3 class="card-title">Esquina Azul: <span class="text-primary">{{ combate.boxeador_azul }}</span></h3>
-        <h3 class="card-title">Esquina Vermella: <span class="text-danger">{{ combate.boxeador_vermello }}</span></h3>
-        <h4 class="card-text">Árbitro da contienda: <strong>{{ combate.arbitro }}</strong></h4>
-        <h4 class="card-text">Peso: <strong>{{ combate.peso_combate }}</strong></h4>
-        <h4 class="card-text">Categoría: <strong>{{ combate.categoria_combate }}</strong></h4>
-        <h4 class="card-text">Resultado: <strong>{{ combate.resultado }}</strong></h4>
-        <h5 class="card-text text-muted">{{ combate.data_combate }}</h5>
-        <h5 class="card-text">Likes: <strong>{{ likes.count }}</strong></h5>
+        <table class="table table-striped">
+          <tbody>
+            <tr>
+              <th scope="row">Esquina Azul</th>
+              <td class="text-primary">{{ combate.boxeador_azul }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Esquina Vermella</th>
+              <td class="text-danger">{{ combate.boxeador_vermello }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Árbitro da contienda</th>
+              <td>
+                <strong>{{ combate.arbitro }}</strong>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Peso</th>
+              <td>
+                <strong>{{ combate.peso_combate }}</strong>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Categoría</th>
+              <td>
+                <strong>{{ combate.categoria_combate }}</strong>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Resultado</th>
+              <td>
+                <strong>{{ combate.resultado }}</strong>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Data do Combate</th>
+              <td class="text-muted">{{ combate.data_combate }}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
+    </div>
+    <div class="container text-end">
+      {% if user.is_authenticated %}
+        <form class="mt-3" action="{% url 'alternar_like' combate.id_combate %}" method="post">
+          {% csrf_token %}
+          {% if user in combate.likes.all %}
+            <button type="submit" class="btn btn-danger"><i class="fas fa-heart-broken"></i></button>
+          {% else %}
+            <button type="submit" class="btn btn-outline-danger"><i class="fas fa-heart"></i></button>
+          {% endif %}
+          {{ combate.likes.count }}
+        </form>
+      {% else %}
+        <button type="button" class="btn btn-outline-secondary mt-3" disabled><i class="fas fa-heart"></i> {{ combate.likes.count }}</button>
+      {% endif %}
     </div>
   </div>
 {% endblock %}

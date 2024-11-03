@@ -56,11 +56,21 @@ def alternar_seguir(request, competidor_id):
         request.user.favoritos.add(competidor)
     return redirect('competidoresPage')
 
+@login_required
+def alternar_like(request, combate_id):
+    combate = get_object_or_404(Combate, id_combate=combate_id)
+    if combate in request.user.combates_gustados.all():
+        request.user.combates_gustados.remove(combate)
+    else:
+        request.user.combates_gustados.add(combate)
+    return redirect(request.META.get('HTTP_REFERER', 'combateEspecifico'), id=combate_id) 
+
 def perfilCompetidorHTML(request, id):
   competidorEspecifico = Competidor.objects.get(id_competidor=id)
   numeroCombates_azul = Combate.objects.filter(boxeador_azul_id=id).count()
   numeroCombates_vermello = Combate.objects.filter(boxeador_vermello_id=id).count()
-  listaCombates = Combate.objects.all()
+  listaCombates =  Combate.objects.filter(boxeador_azul=competidorEspecifico) | Combate.objects.filter(boxeador_vermello=competidorEspecifico)
+
   vitorias= competidorEspecifico.vitorias
   derrotas= competidorEspecifico.derrotas
   empates= competidorEspecifico.empates
