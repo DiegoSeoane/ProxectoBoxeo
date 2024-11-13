@@ -1,40 +1,104 @@
 {% extends 'header.html' %}
+
 {% block title %}
   Eventos
 {% endblock %}
-{% block corpo %}
-  {% for item in eventos_con_combates %}
-    <div class="container text-center">
-      <div class="row p-5">
-        <div class="col-12 col-md-6">
-          {% if item.evento.foto_evento %}
-            <img src="/media/{{ item.evento.foto_evento }}" alt="{{ item.evento.nome_evento }}" style="width: 300px;" />
-          {% else %}
-            <img src="/media/eventos/defaultEvento.jpg" alt="{{ item.evento.nome_evento }}" style="width: 300px;" />
-          {% endif %}
-        </div>
-        <div class="col-12 col-md-6">
-          <h1 class="p-3">{{ item.evento.nome_evento }}</h1>
-          <h6 class="p-3">{{ item.evento.lugar_evento }}</h6>
-          <h6 class="p-3">{{ item.evento.data_evento }}</h6>
-        </div>
-      </div>
 
-      <div class="row w-50 mx-auto">
-        <h1 class="text-center">Combates</h1>
-        <ul class="list-group">
-          {% if item.combates %}
-            {% for combate in item.combates %}
-              <li class="list-group-item text-center">
-                <a class="nav-link" href="{% url 'combateEspecifico' combate.id_combate %}">{{ combate }}</a>
-              </li>
-            {% endfor %}
-          {% else %}
-            <li class="list-group-item text-center">Non hai combates rexistrados</li>
-          {% endif %}
-        </ul>
-      </div>
+{% block corpo %}
+  <div class="container py-4">
+    <div class="mb-4 position-relative">
+      <label for="buscadorEventos" class="form-label">Buscar Evento:</label>
+      <input type="text" class="form-control" id="buscadorEventos" placeholder="Escribe el nombre del evento" aria-label="Buscar evento" />
+      <div id="suxerencias" class="position-absolute bg-white border mt-1 w-100" style="display: none; max-height: 200px; overflow-y: auto; z-index: 1000;"></div>
     </div>
-    <hr />
-  {% endfor %}
+
+    <h1 class="my-3">Últimos eventos</h1>
+
+    <div class="row g-4" id="listaEventos">
+      {% for item in eventos_con_combates|slice:':3' %}
+        <div class="col-12 col-md-6 col-lg-4 evento-item">
+          <div class="card h-100 shadow-sm border-light">
+            <a class="nav-link" href="{% url 'eventoEspecifico' item.evento.id_evento %}">
+              <div class="row g-0">
+                <div class="col-md-4">
+                  {% if item.evento.foto_evento %}
+                    <img src="/media/{{ item.evento.foto_evento }}" alt="{{ item.evento.nome_evento }}" class="img-fluid rounded-start" />
+                  {% else %}
+                    <img src="/media/eventos/defaultEvento.jpg" alt="{{ item.evento.nome_evento }}" class="img-fluid rounded-start" />
+                  {% endif %}
+                </div>
+                <div class="col-md-8">
+                  <div class="card-body">
+                    <h5 class="card-title">{{ item.evento.nome_evento }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ item.evento.lugar_evento }}</h6>
+                    <p class="card-text">{{ item.evento.data_evento }}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer mt-3">
+                <h6 class="text-center">Combates</h6>
+                <ul class="list-group list-group-flush">
+                  {% if item.combates %}
+                    {% for combate in item.combates %}
+                      <li class="list-group-item text-center">{{ combate }}</li>
+                    {% endfor %}
+                  {% else %}
+                    <li class="list-group-item text-center">Non hai combates rexistrados</li>
+                  {% endif %}
+                </ul>
+              </div>
+            </a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <script defer>
+    document.addEventListener('DOMContentLoaded', function () {
+      const buscadorInput = document.getElementById('buscadorEventos')
+      const suxerencias = document.getElementById('suxerencias')
+
+      const eventos = [
+        {% for item in eventos_con_combates %}
+          {
+            nome: "{{ item.evento.nome_evento }}",
+            url: "{% url 'eventoEspecifico' item.evento.id_evento %}"
+          },
+        {% endfor %}
+      ]
+
+      // Mostrar suxerencias
+      buscadorInput.addEventListener('input', () => {
+        const searchTerm = buscadorInput.value.toLowerCase()
+        suxerencias.innerHTML = ''
+
+        if (searchTerm) {
+          const filteredEventos = eventos.filter(evento => evento.nome.toLowerCase().includes(searchTerm))
+          
+          if (filteredEventos.length) {
+            suxerencias.style.display = 'block'
+            filteredEventos.forEach(evento => {
+              const link = document.createElement('a')
+              link.href = evento.url
+              link.classList.add('d-block', 'p-2', 'text-decoration-none', 'text-dark')
+              link.textContent = evento.nome
+              suxerencias.appendChild(link)
+            })
+          } else {
+            suxerencias.style.display = 'none'
+          }
+        } else {
+          suxerencias.style.display = 'none'
+        }
+      })
+
+      // Ocultar suxerencias se se pulsa fora
+      document.addEventListener('click', (e) => {
+        if (!suxerencias.contains(e.target) && e.target !== buscadorInput) {
+          suxerencias.style.display = 'none'
+        }
+      })
+    })
+  </script>
 {% endblock %}

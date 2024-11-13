@@ -1,0 +1,52 @@
+{% extends 'header.html' %}
+{% block title %}
+  {{ evento.nome_evento }}
+{% endblock %}
+{% block corpo %}
+  <div class="container mt-5">
+    <div class="card shadow-lg border-0 mb-5">
+      <div class="row g-0">
+        <div class="col-md-5">
+          {% if evento.foto_evento %}
+            <img src="{{ evento.foto_evento.url }}" alt="{{ evento.nome_evento }}" class="img-fluid rounded-start" />
+          {% else %}
+            <img src="/media/eventos/defaultEvento.jpg" alt="{{ evento.nome_evento }}" class="img-fluid rounded-start" />
+          {% endif %}
+        </div>
+
+        <div class="col-md-7">
+          <div class="card-body text-center p-4">
+            <p class="card-title display-5 my-5">{{ evento.nome_evento }}</p>
+            <p class="card-text text-muted">
+              <i class="bi bi-calendar-event"></i> {{ evento.data_evento }}
+            </p>
+            <p class="card-text text-muted">
+              <i class="bi bi-geo-alt-fill"></i> {{ evento.lugar_evento }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="text-center my-4">Combates</h2>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5">
+      {% for combate in combates %}
+        <a class="nav-link" href="{% url 'combateEspecifico' combate.id_combate %}">
+          <div class="col">
+            <div class="card shadow-sm border-light h-100">
+              <div class="card-body text-center {% if combate.likes.count >= NUMERO_LIKES_DESTACADO %}combate-destacado{% endif %}">
+                <h5 class="card-title">{{ combate }}</h5>
+                <p class="card-text">{{ combate.peso_combate }}</p>
+                {% if combate.likes.count >= NUMERO_LIKES_DESTACADO %}
+                  <span class="badge bg-warning text-dark">Destacado</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          {% empty %}
+          <p class="text-center">Non hai combates rexistrados para este evento.</p>ç
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}

@@ -27,13 +27,21 @@
 }
 
 .combate-destacado {
-    background-color: #f8d7da;
-    border: 2px solid #c82333;
-    font-weight: bold;
-    color: #721c24;
+    border: solid var(--size-2, 3px) transparent;
+    border-radius: var(--radius-4, 8px);
+    background:
+        linear-gradient(to right, rgba(0, 123, 255, 0.3), rgba(255, 0, 0, 0.3)),
+        linear-gradient(var(--surface-1, #ffffff), var(--surface-1, #ffffff)) padding-box,
+        var(--gradient-1, linear-gradient(135deg, blue, red 71%)) border-box;
 }
 
 .perfil-competidor {
     width: 400px;
     height: 600px;
+}
+
+*::after {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
 }

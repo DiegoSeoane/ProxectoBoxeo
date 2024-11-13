@@ -13,6 +13,7 @@ urlpatterns = [
     path('eventos/', views.eventosHTML, name='eventosPage'),
     path('competidores/', views.competidoresHTML, name='competidoresPage'),
     path('competidores/<int:id>/', views.perfilCompetidorHTML),
+    path('evento/<int:id>/', views.eventoEspecificoHTML, name='eventoEspecifico'),
     path('combate/<int:id>/', views.combateHTML, name='combateEspecifico'),
     path('administracion/', views.administracion, name='administracion'),
     path('administracion/engadir', views.engadir, name='engadir'),

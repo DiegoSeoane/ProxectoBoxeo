@@ -1,3 +1,4 @@
+import re
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
@@ -17,7 +18,7 @@ NUMERO_LIKES_DESTACADO = 10
 
 def inicioHTML(request):
   template = loader.get_template('index.html')
-  listaEventos = Evento.objects.all().values()[:3]
+  listaEventos = Evento.objects.all().values().order_by('-data_evento')[:3]
   if request.user.is_authenticated:          
       competidores = request.user.favoritos.all()
   else:        
@@ -32,7 +33,7 @@ def inicioHTML(request):
   return HttpResponse(template.render(contido, request))
 
 def eventosHTML(request):
-    listaEventos = Evento.objects.all().order_by('-id_evento')
+    listaEventos = Evento.objects.all().order_by('-data_evento')
     eventos_con_combates = []
 
     for evento in listaEventos:
@@ -49,21 +50,38 @@ def eventosHTML(request):
     }
     return HttpResponse(template.render(context, request))
 
+
 def competidoresHTML(request):
-  competidores_por_peso = Competidor.objects.values('peso_competidor').annotate(count=Count('id_competidor')).order_by('peso_competidor')
-  competidores_agrupados = {}
-  for competidor in Competidor.objects.order_by('apelidos_competidor'):
+
+    # Función para extraer o numero do peso
+    def peso_numero(weight_str):
+      match = re.search(r"(-\d+)$", weight_str)
+      return int(match.group(1)) if match else 0
+
+
+    competidores_por_peso = Competidor.objects.values('peso_competidor').annotate(count=Count('id_competidor')).order_by('peso_competidor')
+
+    # Agrupar competidores por peso
+    competidores_agrupados = {}
+    for competidor in Competidor.objects.order_by('apelidos_competidor'):
         peso = competidor.peso_competidor
         if peso not in competidores_agrupados:
             competidores_agrupados[peso] = []
         competidores_agrupados[peso].append(competidor)
 
-  contido = {
-    'competidores_por_peso':competidores_por_peso,
-    'competidores_agrupados':dict(sorted(competidores_agrupados.items()))
-  }
-  template = loader.get_template('competidores.html')
-  return HttpResponse(template.render(contido, request))
+    competidores_agrupados = dict(sorted(competidores_agrupados.items(), key=lambda item: peso_numero(item[0]), reverse=True))
+
+    for peso, competidores in competidores_agrupados.items():
+        competidores.sort(key=lambda competidor: competidor.nome_competidor.lower())
+
+    contido = {
+        'competidores_por_peso': competidores_por_peso,
+        'competidores_agrupados': competidores_agrupados
+    }
+
+    template = loader.get_template('competidores.html')
+    return HttpResponse(template.render(contido, request))
+
 
 @login_required
 def alternar_seguir(request, competidor_id):
@@ -118,6 +136,19 @@ def perfilCompetidorHTML(request, id):
   }
   template = loader.get_template('perfilCompetidor.html')
   return HttpResponse(template.render(contido, request))
+
+def eventoEspecificoHTML(request, id):
+  template = loader.get_template('eventoEspecifico.html')
+  eventoEspecifico = Evento.objects.get(id_evento = id)
+  combates = Combate.objects.filter(evento_combate = eventoEspecifico)
+
+  contido = {
+    'combates':combates,
+    'evento': eventoEspecifico,
+    'NUMERO_LIKES_DESTACADO':NUMERO_LIKES_DESTACADO
+  }
+  return HttpResponse(template.render(contido, request))
+  
 
 def combateHTML(request, id):
   combateEspecifico = Combate.objects.get(id_combate = id)
