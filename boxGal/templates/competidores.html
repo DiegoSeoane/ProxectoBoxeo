@@ -8,44 +8,96 @@
   </div>
   <hr />
   <div class="container">
-    <ul class="list-group" id="listaCompetidores">
-      {% for competidor in listaCompetidores %}
-        <li class="list-group-item list-group-item-action d-flex justify-content-between">
-          <a href="{% url 'competidoresPage' %}{{ competidor.id_competidor }}" class="nav-link text-dark">
-            {% if competidor.foto_competidor %}
-              <img src="/media/{{ competidor.foto_competidor }}" alt="{{ competidor.nome_competidor }} {{ competidor.apelidos_competidor }}" class="mx-2 img-competidor-min" />
-            {% else %}
-              <img src="/media/competidores/defaultCompetidor.png" alt="{{ competidor.nome_competidor }} {{ competidor.apelidos_competidor }}" style="height: 50px;" class="mx-2" />
-            {% endif %}
-            {{ competidor.nome_competidor }} {{ competidor.apelidos_competidor }}
-          </a>
-          {% if user.is_authenticated %}
-            <form action="{% url 'alternar_seguir' competidor.id_competidor %}" method="post">
-              {% csrf_token %}
-              {% if competidor in user.favoritos.all.values %}
-                <button type="submit" class="btn btn-danger">Dejar de Seguir</button>
-              {% else %}
-                <button type="submit" class="btn btn-outline-primary">Seguir</button>
-              {% endif %}
-            </form>
-          {% endif %}
-        </li>
+    <form class="mb-4">
+      <label for="pesoSelect">Buscar competidores por peso:</label>
+      <select id="pesoSelect" class="form-select">
+        <option value="">Seleccione un peso</option>
+        {% for peso in competidores_por_peso %}
+          <option value="{{ peso.peso_competidor }}">{{ peso.peso_competidor }}</option>
+        {% endfor %}
+      </select>
+    </form>
+    <div id="listaCompetidoresPorPeso">
+      {% for peso, competidores in competidores_agrupados.items %}
+        <div class="peso-bloque" data-peso="{{ peso }}">
+          <h3>Peso: {{ peso }}</h3>
+          <ul class="list-group lista-competidores">
+            {% for competidor in competidores %}
+              <li class="list-group-item list-group-item-action d-flex justify-content-between competidor-item">
+                <a href="{% url 'competidoresPage' %}{{ competidor.id_competidor }}" class="nav-link text-dark">
+                  {% if competidor.foto_competidor %}
+                    <img src="/media/{{ competidor.foto_competidor }}" alt="{{ competidor.nome_competidor }} {{ competidor.apelidos_competidor }}" class="mx-2 img-competidor-min" />
+                  {% else %}
+                    <img src="/media/competidores/defaultCompetidor.png" alt="{{ competidor.nome_competidor }} {{ competidor.apelidos_competidor }}" style="height: 50px;" class="mx-2" />
+                  {% endif %}
+                  {{ competidor.nome_competidor }} {{ competidor.apelidos_competidor }}
+                </a>
+                {% if user.is_authenticated %}
+                  <form action="{% url 'alternar_seguir' competidor.id_competidor %}" method="post">
+                    {% csrf_token %}
+                    {% if competidor in user.favoritos.all %}
+                      <button type="submit" class="btn btn-danger">Deixar de Seguir</button>
+                    {% else %}
+                      <button type="submit" class="btn btn-outline-primary">Seguir</button>
+                    {% endif %}
+                  </form>
+                {% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
       {% endfor %}
-    </ul>
+    </div>
   </div>
   <script defer>
-    let buscador = document.getElementById('buscadorInput')
-    buscador.addEventListener('input', (ev) => {
-      valorBuscador = buscador.value.toUpperCase()
-      let listaC = document.getElementById('listaCompetidores')
-      for (const elementoli of listaC.children) {
-        if (elementoli.innerText.toUpperCase().includes(valorBuscador)) {
-          console.log(elementoli.innerText)
-          elementoli.classList.remove('oculto')
-        } else {
-          elementoli.classList.add('oculto')
-        }
-      }
+    document.addEventListener('DOMContentLoaded', function () {
+      const buscadorInput = document.getElementById('buscadorInput')
+      const pesoSelect = document.getElementById('pesoSelect')
+      const pesoBloques = document.querySelectorAll('.peso-bloque')
+      const listaCompetidores = document.querySelectorAll('.competidor-item')
+    
+      // Filtrar por nome de competidor
+      buscadorInput.addEventListener('input', () => {
+        const searchTerm = buscadorInput.value.toUpperCase()
+    
+        pesoBloques.forEach((bloque) => {
+          const competidores = bloque.querySelectorAll('.competidor-item')
+          let competidorVisible = false
+    
+          competidores.forEach((item) => {
+            const competidorName = item.innerText.toUpperCase()
+            if (competidorName.includes(searchTerm)) {
+              item.classList.remove('oculto')
+              competidorVisible = true
+            } else {
+              item.classList.add('oculto')
+            }
+          })
+    
+          const header = bloque.querySelector('h3')
+          if (competidorVisible) {
+            bloque.style.display = ''
+            header.style.display = ''
+          } else {
+            bloque.style.display = 'none'
+            header.style.display = 'none'
+          }
+        })
+      })
+    
+      // Filtrar por peso seleccionado
+      pesoSelect.addEventListener('change', () => {
+        const selectedPeso = pesoSelect.value
+    
+        pesoBloques.forEach((bloque) => {
+          const bloquePeso = bloque.getAttribute('data-peso')
+          if (!selectedPeso || bloquePeso === selectedPeso) {
+            bloque.style.display = ''
+          } else {
+            bloque.style.display = 'none'
+          }
+        })
+      })
     })
   </script>
 {% endblock %}

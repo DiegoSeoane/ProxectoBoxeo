@@ -25,3 +25,15 @@
     border-color: antiquewhite;
     margin: auto;
 }
+
+.combate-destacado {
+    background-color: #f8d7da;
+    border: 2px solid #c82333;
+    font-weight: bold;
+    color: #721c24;
+}
+
+.perfil-competidor {
+    width: 400px;
+    height: 600px;
+}

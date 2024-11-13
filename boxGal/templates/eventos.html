@@ -3,43 +3,38 @@
   Eventos
 {% endblock %}
 {% block corpo %}
-  {% for evento in listaEventos %}
+  {% for item in eventos_con_combates %}
     <div class="container text-center">
       <div class="row p-5">
         <div class="col-12 col-md-6">
-          {% if evento.foto_evento %}
-            <img src="/media/{{ evento.foto_evento }}" alt="{{ evento.nome_evento }}" class="" style="width: 300px;" />
+          {% if item.evento.foto_evento %}
+            <img src="/media/{{ item.evento.foto_evento }}" alt="{{ item.evento.nome_evento }}" style="width: 300px;" />
           {% else %}
-            <img src="/media/eventos/defaultEvento.jpg" alt="{{ evento.nome_evento }}" class="" style="width: 300px;" />
+            <img src="/media/eventos/defaultEvento.jpg" alt="{{ item.evento.nome_evento }}" style="width: 300px;" />
           {% endif %}
         </div>
         <div class="col-12 col-md-6">
-          <h1 class="p-3">{{ evento.nome_evento }}</h1>
-          <h6 class="p-3">{{ evento.lugar_evento }}</h6>
-          <h6 class="p-3">{{ evento.data_evento }}</h6>
+          <h1 class="p-3">{{ item.evento.nome_evento }}</h1>
+          <h6 class="p-3">{{ item.evento.lugar_evento }}</h6>
+          <h6 class="p-3">{{ item.evento.data_evento }}</h6>
         </div>
       </div>
+
       <div class="row w-50 mx-auto">
         <h1 class="text-center">Combates</h1>
         <ul class="list-group">
-          {% with combate_atopado=False %}
-            {% for combate in combates %}
-              {% if combate.evento_combate.id_evento == evento.id_evento %}
-                {% with combate_atopado=True %}
-                  <li class="list-group-item text-center">
-                    <a class="nav-link" href="{% url 'combateEspecifico' combate.id_combate %}">{{ combate }}</a>
-                  </li>
-                {% endwith %}
-              {% endif %}
+          {% if item.combates %}
+            {% for combate in item.combates %}
+              <li class="list-group-item text-center">
+                <a class="nav-link" href="{% url 'combateEspecifico' combate.id_combate %}">{{ combate }}</a>
+              </li>
             {% endfor %}
-          {% endwith %}
-          {% if not combate_atopado %}
+          {% else %}
             <li class="list-group-item text-center">Non hai combates rexistrados</li>
           {% endif %}
         </ul>
       </div>
     </div>
     <hr />
-    <!-- Final bloque -->
   {% endfor %}
 {% endblock %}

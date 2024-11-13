@@ -4,8 +4,17 @@
 {% endblock %}
 {% block corpo %}
   <div class="container text-center">
+    {% if user.is_staff %}
+      <div class="mt-3 text-end">
+        <a href="{% url 'modificar_competidor' competidor.id_competidor %}" class="btn btn-primary my-3">Modificar</a>
+        <form action="{% url 'eliminarCompetidor' competidor.id_competidor %}" method="post" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger" onclick="return confirm('Seguro que queres eliminar a este competidor?');">Eliminar</button>
+        </form>
+      </div>
+    {% endif %}
     <div class="row p-5">
-      <div class="col-12 col-md-6">
+      <div class="col-12 col-md-6 perfil-competidor">
         <div class="card">
           {% if competidor.foto_competidor %}
             <img src="{{ competidor.foto_competidor.url }}" alt="{{ competidor.nome_competidor }}" class="card-img-top" />
@@ -17,10 +26,22 @@
           </div>
         </div>
         <p>Seguidores: {{ competidor.seguidores.all.count }}</p>
+        {% if user.is_authenticated %}
+          <form action="{% url 'alternar_seguir' competidor.id_competidor %}" method="post" class="mt-3">
+            {% csrf_token %}
+            {% if user in competidor.seguidores.all %}
+              <button type="submit" class="btn btn-danger">Deixar de Seguir</button>
+            {% else %}
+              <button type="submit" class="btn btn-outline-primary">Seguir</button>
+            {% endif %}
+          </form>
+        {% else %}
+          <p class="mt-3">Inicia sesión para seguir a este competidor.</p>
+        {% endif %}
       </div>
       <div class="col-12 col-md-6">
         <div class="row my-5">
-          <!-- Stats -->
+          <!-- Estadisticas -->
           <div id="animations-example-4">
             <table class="charts-css column show-labels hide-data data-spacing-5 show-primary-axis">
               <tbody>
@@ -48,21 +69,21 @@
         </div>
       </div>
     </div>
-    <div class="row w-50 mx-auto">
-      <h1 class="text-center">Combates</h1>
-      <ul class="list-group">
-        {% if listaCombates %}
-          {% for combate in listaCombates %}
-            {% if combate.boxeador_azul == competidor or combate.boxeador_vermello == competidor %}
-              <li class="list-group-item text-center">
-                <a href="{% url 'combateEspecifico' combate.id_combate %}" class="text-decoration-none">{{ combate }}</a>
-              </li>
-            {% endif %}
-          {% endfor %}
-        {% else %}
-          <li class="list-group-item text-center">Non ten combates rexistrados.</li>
-        {% endif %}
-      </ul>
-    </div>
+  </div>
+  <div class="row w-50 mx-auto">
+    <h1 class="text-center">Combates</h1>
+    <ul class="list-group mb-4">
+      {% if listaCombates %}
+        {% for combate in listaCombates %}
+          {% if combate.boxeador_azul == competidor or combate.boxeador_vermello == competidor %}
+            <li class="list-group-item text-center {% if combate.likes.count >= NUMERO_LIKES_DESTACADO %}combate-destacado{% endif %}">
+              <a href="{% url 'combateEspecifico' combate.id_combate %}" class="text-decoration-none">{{ combate }}</a>
+            </li>
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        <li class="list-group-item text-center">Non ten combates rexistrados.</li>
+      {% endif %}
+    </ul>
   </div>
 {% endblock %}

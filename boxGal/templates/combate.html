@@ -4,7 +4,16 @@
 {% endblock %}
 {% block corpo %}
   <div class="container mt-5">
-    <div class="card">
+    {% if user.is_staff %}
+      <div class="mt-3">
+        <a href="{% url 'modificar_combate' combate.id_combate %}" class="btn btn-primary my-3">Modificar</a>
+        <form action="{% url 'eliminarCombate' combate.id_combate %}" method="post" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger" onclick="return confirm('Seguro que queres eliminar a este combate?');">Eliminar</button>
+        </form>
+      </div>
+    {% endif %}
+    <div class="card {% if combate.likes.count >= 10 %}combate-destacado{% endif %}">
       <div class="card-header text-center">
         <h2>Detalles do Combate</h2>
       </div>
@@ -13,11 +22,15 @@
           <tbody>
             <tr>
               <th scope="row">Esquina Azul</th>
-              <td class="text-primary">{{ combate.boxeador_azul }}</td>
+              <td>
+                <a href="{% url 'competidoresPage' %}{{ esquinaAzul.id_competidor }}" class="text-primary text-decoration-none">{{ esquinaAzul }}</a>
+              </td>
             </tr>
             <tr>
               <th scope="row">Esquina Vermella</th>
-              <td class="text-danger">{{ combate.boxeador_vermello }}</td>
+              <td>
+                <a href="{% url 'competidoresPage' %}{{ esquinaVermella.id_competidor }}" class="text-danger text-decoration-none">{{ esquinaVermella }}</a>
+              </td>
             </tr>
             <tr>
               <th scope="row">Árbitro da contienda</th>

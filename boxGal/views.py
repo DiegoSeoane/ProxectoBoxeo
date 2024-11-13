@@ -10,6 +10,10 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 
+#Variables
+
+NUMERO_LIKES_DESTACADO = 10
+
 
 def inicioHTML(request):
   template = loader.get_template('index.html')
@@ -20,9 +24,7 @@ def inicioHTML(request):
       competidores = Competidor.objects.annotate(num_seguidores=Count('seguidores')).order_by('-num_seguidores')
   paginator = Paginator(competidores, 5)
   page_number = request.GET.get('page')
-  page_obj = paginator.get_page(page_number)
-
-  
+  page_obj = paginator.get_page(page_number)  
   contido = {
     'listaEventos':listaEventos,
     'page_obj':page_obj
@@ -30,19 +32,35 @@ def inicioHTML(request):
   return HttpResponse(template.render(contido, request))
 
 def eventosHTML(request):
-  listaEventos = Evento.objects.all().values().order_by('-id_evento')
-  combates = Combate.objects.all()
-  template = loader.get_template('eventos.html')
-  contido = {
-    'listaEventos':listaEventos,
-    'combates':combates
-  }
-  return HttpResponse(template.render(contido, request))
+    listaEventos = Evento.objects.all().order_by('-id_evento')
+    eventos_con_combates = []
+
+    for evento in listaEventos:
+        combates_evento = Combate.objects.filter(evento_combate=evento)
+        eventos_con_combates.append({
+            'evento': evento,
+            'combates': combates_evento
+        })
+
+    template = loader.get_template('eventos.html')
+    context = {
+        'eventos_con_combates': eventos_con_combates,
+        'NUMERO_LIKES_DESTACADO':NUMERO_LIKES_DESTACADO
+    }
+    return HttpResponse(template.render(context, request))
 
 def competidoresHTML(request):
-  listaCompetidores = Competidor.objects.all().values().order_by('-nome_competidor')
+  competidores_por_peso = Competidor.objects.values('peso_competidor').annotate(count=Count('id_competidor')).order_by('peso_competidor')
+  competidores_agrupados = {}
+  for competidor in Competidor.objects.order_by('apelidos_competidor'):
+        peso = competidor.peso_competidor
+        if peso not in competidores_agrupados:
+            competidores_agrupados[peso] = []
+        competidores_agrupados[peso].append(competidor)
+
   contido = {
-    'listaCompetidores':listaCompetidores
+    'competidores_por_peso':competidores_por_peso,
+    'competidores_agrupados':dict(sorted(competidores_agrupados.items()))
   }
   template = loader.get_template('competidores.html')
   return HttpResponse(template.render(contido, request))
@@ -54,7 +72,9 @@ def alternar_seguir(request, competidor_id):
         request.user.favoritos.remove(competidor)
     else:
         request.user.favoritos.add(competidor)
-    return redirect('competidoresPage')
+        
+    referer_url = request.META.get('HTTP_REFERER')
+    return redirect(referer_url)
 
 @login_required
 def alternar_like(request, combate_id):
@@ -76,7 +96,7 @@ def perfilCompetidorHTML(request, id):
   empates= competidorEspecifico.empates
   totalCombates = vitorias + derrotas + empates
   if totalCombates > 0:
-    # As estadisticas necesitan un numero menor a 1 para que funcione correctamente
+    # As estadisticas necesitan un numero menor a 1 para que funcione correctamente, por eso non usamos porcentaxe
     porcentaxeVitoriasStats = (vitorias/totalCombates)
     porcentaxeDerrotasStats = (derrotas/totalCombates)
     porcentaxeEmpatesStats = (empates/totalCombates)
@@ -93,17 +113,23 @@ def perfilCompetidorHTML(request, id):
     'empates':empates,
     'porcentaxeVitorias':porcentaxeVitoriasStats,
     'porcentaxeDerrotas':porcentaxeDerrotasStats,
-    'porcentaxeEmpates':porcentaxeEmpatesStats
+    'porcentaxeEmpates':porcentaxeEmpatesStats,
+    'NUMERO_LIKES_DESTACADO':NUMERO_LIKES_DESTACADO
   }
   template = loader.get_template('perfilCompetidor.html')
   return HttpResponse(template.render(contido, request))
 
 def combateHTML(request, id):
   combateEspecifico = Combate.objects.get(id_combate = id)
+  esquinaAzul = Competidor.objects.get(id_competidor = combateEspecifico.boxeador_azul.id_competidor)
+  esquinaVermella = Competidor.objects.get(id_competidor = combateEspecifico.boxeador_vermello.id_competidor)
   likes = Combate.objects.filter(id_combate = id).values('likes').annotate(count = Count('likes'))
   contido = {
     'combate': combateEspecifico,
-    'likes':likes
+    'likes':likes,
+    'esquinaAzul':esquinaAzul,
+    'esquinaVermella':esquinaVermella,
+    'NUMERO_LIKES_DESTACADO':NUMERO_LIKES_DESTACADO
   }
   template = loader.get_template('combate.html')
   return HttpResponse(template.render(contido, request))
@@ -140,8 +166,8 @@ def engadir_competidor(request):
     if request.method == "POST":
         form = CompetidorForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
-            return redirect('competidoresPage')
+            form.save()            
+            return redirect('engadirCompetidor')
     else:
         form = CompetidorForm()
     
@@ -153,7 +179,7 @@ def engadir_combate(request):
         form = CombateForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            return redirect('competidoresPage')
+            return redirect('engadirCombate')
     else:
         form = CombateForm()
     
@@ -165,7 +191,7 @@ def engadir_evento(request):
         form = EventoForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            return redirect('eventosPage')
+            return redirect('engadirEvento')
     else:
         form = EventoForm()
     
@@ -201,7 +227,7 @@ def modificar_competidor(request,competidor_id):
     form = CompetidorForm(request.POST, request.FILES, instance=competidor)
     if form.is_valid():
       form.save()
-      return redirect('administracion')
+      return redirect('modificar')
   else:
     form = CompetidorForm(instance=competidor)
   return render(request, 'administracion/modificarFormulario.html', {'form':form, 'tipo':tipo})
@@ -255,7 +281,7 @@ def eliminarCompetidor(request, competidor_id):
 
     if request.method == 'POST':
         competidor.delete()
-        return redirect('administracion')
+        return redirect('eliminar')
 
     return HttpResponseRedirect(reverse('competidoresPage'))
   
@@ -264,7 +290,7 @@ def eliminarCombate(request, combate_id):
 
     if request.method == 'POST':
         combate.delete()
-        return redirect('administracion')
+        return redirect('eliminar')
 
     return HttpResponseRedirect(reverse('competidoresPage'))
 def eliminarEvento(request, evento_id):
@@ -272,7 +298,7 @@ def eliminarEvento(request, evento_id):
 
     if request.method == 'POST':
         eventos.delete()
-        return redirect('administracion')
+        return redirect('eliminar')
 
     return HttpResponseRedirect(reverse('competidoresPage'))
 
