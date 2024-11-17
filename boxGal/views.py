@@ -1,6 +1,6 @@
 import re
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.template import loader
 from .models import Competidor,Combate,Evento,Usuario
 from django.db.models import Q, Count
@@ -166,14 +166,21 @@ def combateHTML(request, id):
   return HttpResponse(template.render(contido, request))
   
 # Administracion
-
+@login_required
 def administracion(request):  
+  if not request.user.is_superuser:
+    return HttpResponseForbidden(render(request,'403.html'))
+
   template = loader.get_template('administracion/administrador.html')
   contido = {}
   return HttpResponse(template.render(contido, request))
 
 # Engadir información (CRUD)
+@login_required
 def engadir(request):
+  if not request.user.is_superuser:
+    return HttpResponseForbidden("Non tes permisos para acceder a esta páxina.")
+  
   template = loader.get_template('administracion/engadir.html')
   lista = request.GET.get('','')
   
@@ -192,47 +199,60 @@ def engadir(request):
   
   return HttpResponse(template.render(contido, request))
 
+@login_required
 def engadir_competidor(request):
-    tipo = 'Competidor'
-    if request.method == "POST":
-        form = CompetidorForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()            
-            return redirect('engadirCompetidor')
-    else:
-        form = CompetidorForm()
-    
-    return render(request, 'administracion/engadir.html', {'form': form, 'tipo':tipo})
+  if not request.user.is_superuser:
+    return HttpResponseForbidden("Non tes permisos para acceder a esta páxina.")
+  tipo = 'Competidor'
+  if request.method == "POST":
+     form = CompetidorForm(request.POST, request.FILES)
+     if form.is_valid():
+         form.save()            
+         return redirect('engadirCompetidor')
+  else:
+    form = CompetidorForm()
+ 
+  return render(request, 'administracion/engadir.html', {'form': form, 'tipo':tipo})
 
+@login_required
 def engadir_combate(request):
-    tipo = 'Combate'
-    if request.method == "POST":
-        form = CombateForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('engadirCombate')
-    else:
-        form = CombateForm()
+  if not request.user.is_superuser:
+    return HttpResponseForbidden("Non tes permisos para acceder a esta páxina.")
+  
+  tipo = 'Combate'
+  if request.method == "POST":
+    form = CombateForm(request.POST, request.FILES)
+  if form.is_valid():
+      form.save()
+      return redirect('engadirCombate')
+  else:
+      form = CombateForm()
     
-    return render(request, 'administracion/engadir.html', {'form': form, 'tipo':tipo})
+  return render(request, 'administracion/engadir.html', {'form': form, 'tipo':tipo})
 
+@login_required
 def engadir_evento(request):
-    tipo = 'Evento'        
-    if request.method == "POST":
-        form = EventoForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('engadirEvento')
-    else:
-        form = EventoForm()
-    
-    return render(request, 'administracion/engadir.html', {'form': form, 'tipo':tipo})
+  if not request.user.is_superuser:
+    return HttpResponseForbidden("Non tes permisos para acceder a esta páxina.")
+  tipo = 'Evento'        
+  if request.method == "POST":
+      form = EventoForm(request.POST, request.FILES)
+      if form.is_valid():
+          form.save()
+          return redirect('engadirEvento')
+  else:
+      form = EventoForm()
+  
+  return render(request, 'administracion/engadir.html', {'form': form, 'tipo':tipo})
 
 
 # Modificar información (CRUD)
 
-
+@login_required
 def modificar(request):
+  if not request.user.is_superuser:
+    return HttpResponseForbidden("Non tes permisos para acceder a esta páxina.")
+  
   template = loader.get_template('administracion/modificar.html')
   lista = request.GET.get('lista','competidores')
   
@@ -251,7 +271,11 @@ def modificar(request):
   
   return HttpResponse(template.render(contido, request))
 
+@login_required
 def modificar_competidor(request,competidor_id):
+  if not request.user.is_superuser:
+    return HttpResponseForbidden("Non tes permisos para acceder a esta páxina.")
+  
   competidor = get_object_or_404(Competidor, id_competidor=competidor_id)
   tipo = 'Competidor'
   if request.method == 'POST':
@@ -263,7 +287,11 @@ def modificar_competidor(request,competidor_id):
     form = CompetidorForm(instance=competidor)
   return render(request, 'administracion/modificarFormulario.html', {'form':form, 'tipo':tipo})
 
+@login_required
 def modificar_combate(request,combate_id):
+  if not request.user.is_superuser:
+    return HttpResponseForbidden("Non tes permisos para acceder a esta páxina.")
+  
   tipo = 'Combate'
   combate = get_object_or_404(Combate, id_combate=combate_id)
   if request.method == 'POST':
@@ -275,7 +303,11 @@ def modificar_combate(request,combate_id):
     form = CombateForm(instance=combate)
   return render(request, 'administracion/modificarFormulario.html', {'form':form,'tipo':tipo})
 
+@login_required
 def modificar_evento(request,evento_id):
+  if not request.user.is_superuser:
+    return HttpResponseForbidden("Non tes permisos para acceder a esta páxina.")
+  
   tipo = 'Evento'
   evento = get_object_or_404(Evento, id_evento=evento_id)
   if request.method == 'POST':
@@ -288,7 +320,11 @@ def modificar_evento(request,evento_id):
   return render(request, 'administracion/modificarFormulario.html', {'form':form,'tipo':tipo})
 
 # Eliminar información (CRUD)
+@login_required
 def eliminar(request):
+  if not request.user.is_superuser:
+    return HttpResponseForbidden("Non tes permisos para acceder a esta páxina.")
+  
   template = loader.get_template('administracion/eliminar.html')
   lista = request.GET.get('lista','competidores')
   
@@ -307,31 +343,39 @@ def eliminar(request):
   
   return HttpResponse(template.render(contido, request))
 
+@login_required
 def eliminarCompetidor(request, competidor_id):
-    competidor = get_object_or_404(Competidor, id_competidor=competidor_id)
-
-    if request.method == 'POST':
-        competidor.delete()
-        return redirect('eliminar')
-
-    return HttpResponseRedirect(reverse('competidoresPage'))
+  if not request.user.is_superuser:
+    return HttpResponseForbidden("Non tes permisos para acceder a esta páxina.")
   
+  competidor = get_object_or_404(Competidor, id_competidor=competidor_id)
+  if request.method == 'POST':
+      competidor.delete()
+      return redirect('eliminar')
+  return HttpResponseRedirect(reverse('competidoresPage'))
+  
+@login_required
 def eliminarCombate(request, combate_id):
-    combate = get_object_or_404(Combate, id_combate=combate_id)
+  if not request.user.is_superuser:
+    return HttpResponseForbidden("Non tes permisos para acceder a esta páxina.")
+  
+  combate = get_object_or_404(Combate, id_combate=combate_id)
+  if request.method == 'POST':
+      combate.delete()
+      return redirect('eliminar')
+  return HttpResponseRedirect(reverse('competidoresPage'))
 
-    if request.method == 'POST':
-        combate.delete()
-        return redirect('eliminar')
-
-    return HttpResponseRedirect(reverse('competidoresPage'))
+@login_required
 def eliminarEvento(request, evento_id):
-    eventos = get_object_or_404(Evento, id_evento =evento_id)
-
-    if request.method == 'POST':
-        eventos.delete()
-        return redirect('eliminar')
-
-    return HttpResponseRedirect(reverse('competidoresPage'))
+  if not request.user.is_superuser:
+    return HttpResponseForbidden("Non tes permisos para acceder a esta páxina.")
+  
+  eventos = get_object_or_404(Evento, id_evento =evento_id)
+  
+  if request.method == 'POST':
+      eventos.delete()
+      return redirect('eliminar')
+  return HttpResponseRedirect(reverse('competidoresPage'))
 
 # Apartado usuarios
 
